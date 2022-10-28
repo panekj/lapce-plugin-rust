@@ -1,7 +1,10 @@
-use std::{sync::{
-    atomic::{AtomicU64, Ordering},
-    Arc,
-}, io};
+use std::{
+    io,
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc,
+    },
+};
 
 use anyhow::Result;
 use crossbeam_channel::{Receiver, Sender};

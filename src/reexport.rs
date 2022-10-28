@@ -1,10 +1,12 @@
 pub use anyhow;
-#[cfg(feature = "flate2")]
+#[cfg(feature = "gzip")]
 pub use flate2;
 #[cfg(feature = "github")]
 pub use octocrab::models::*;
 pub use psp_types;
 pub use serde;
 pub use serde_json;
+#[cfg(feature = "tar")]
+pub use tar;
 #[cfg(feature = "zip")]
 pub use zip;
