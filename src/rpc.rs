@@ -1,7 +1,7 @@
-use std::sync::{
+use std::{sync::{
     atomic::{AtomicU64, Ordering},
     Arc,
-};
+}, io};
 
 use anyhow::Result;
 use crossbeam_channel::{Receiver, Sender};
@@ -16,7 +16,6 @@ use psp_types::{
 };
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::Value;
-use wasi_experimental_http::Response;
 
 pub static PLUGIN_RPC: Lazy<PluginServerRpcHandler> = Lazy::new(PluginServerRpcHandler::new);
 
@@ -38,6 +37,7 @@ pub enum PluginServerRpc {
     },
 }
 
+#[allow(unused)]
 pub struct PluginServerRpcHandler {
     rx: Receiver<PluginServerRpc>,
     tx: Sender<PluginServerRpc>,
@@ -47,8 +47,10 @@ pub struct PluginServerRpcHandler {
 #[macro_export]
 macro_rules! register_plugin {
     ($t:ty) => {
+        use std::cell::RefCell;
+
         thread_local! {
-            static STATE: std::cell::RefCell<$t> = std::cell::RefCell::new(Default::default());
+            static STATE: RefCell<$t> = RefCell::new(Default::default());
         }
 
         fn main() {}
@@ -82,6 +84,8 @@ impl PluginServerRpcHandler {
             id: Arc::new(AtomicU64::new(0)),
         }
     }
+
+    #[allow(unused)]
 
     pub fn mainloop<H>(&self, handler: &mut H)
     where
@@ -145,6 +149,8 @@ impl PluginServerRpcHandler {
         );
     }
 
+    #[allow(unused)]
+
     fn host_request<P: Serialize>(&self, method: &str, params: P) {
         let id = self.id.fetch_add(1, Ordering::Relaxed);
         let params = serde_json::to_value(params).unwrap();
@@ -181,7 +187,7 @@ fn number_from_id(id: &Id) -> u64 {
 
 pub fn parse_stdin() -> Result<PluginServerRpc, serde_json::Error> {
     let mut msg = String::new();
-    std::io::stdin().read_line(&mut msg).unwrap();
+    io::stdin().read_line(&mut msg).unwrap();
     let rpc = match JsonRpc::parse(&msg) {
         Ok(value @ JsonRpc::Request(_)) => {
             let id = number_from_id(&value.get_id().unwrap());
@@ -195,13 +201,13 @@ pub fn parse_stdin() -> Result<PluginServerRpc, serde_json::Error> {
             method: value.get_method().unwrap().to_string(),
             params: serde_json::to_value(value.get_params().unwrap()).unwrap(),
         },
-        Ok(value @ JsonRpc::Success(_)) => {
+        Ok(_value @ JsonRpc::Success(_)) => {
             todo!()
         }
-        Ok(value @ JsonRpc::Error(_)) => {
+        Ok(_value @ JsonRpc::Error(_)) => {
             todo!()
         }
-        Err(err) => {
+        Err(_err) => {
             todo!()
         }
     };
@@ -210,7 +216,7 @@ pub fn parse_stdin() -> Result<PluginServerRpc, serde_json::Error> {
 
 pub fn object_from_stdin<T: DeserializeOwned>() -> Result<T, serde_json::Error> {
     let mut json = String::new();
-    std::io::stdin().read_line(&mut json).unwrap();
+    io::stdin().read_line(&mut json).unwrap();
     serde_json::from_str(&json)
 }
 

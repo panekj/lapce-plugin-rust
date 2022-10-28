@@ -1,5 +1,5 @@
 use anyhow::Result;
-use http::{request, Method, Request};
+use http::{request, Method};
 use wasi_experimental_http::Response;
 
 pub struct Http {}

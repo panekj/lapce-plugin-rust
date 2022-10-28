@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 pub mod environment;
 pub mod reexport;
 pub mod rpc;
