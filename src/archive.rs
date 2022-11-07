@@ -6,9 +6,9 @@ pub mod gzip {
     use flate2::read::GzDecoder;
 
     pub fn extract(path: &Path, destination: &Path) -> Result<()> {
-        let mut archive = GzDecoder::new(File::open(&path)?);
+        let mut archive = GzDecoder::new(File::open(path)?);
 
-        let mut file = File::create(&destination)?;
+        let mut file = File::create(destination)?;
 
         std::io::copy(&mut archive, &mut file)?;
 
@@ -86,7 +86,7 @@ pub mod zip {
             } else {
                 if let Some(parent) = extract_path.parent() {
                     if !parent.exists() {
-                        fs::create_dir_all(&parent)?;
+                        fs::create_dir_all(parent)?;
                     }
                 }
                 let mut extracted_file = File::create(&extract_path)?;

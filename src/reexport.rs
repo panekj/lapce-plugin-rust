@@ -1,8 +1,6 @@
 pub use anyhow;
 #[cfg(feature = "gzip")]
 pub use flate2;
-#[cfg(feature = "github")]
-pub use octocrab::models::*;
 pub use psp_types;
 pub use serde;
 pub use serde_json;
