@@ -60,14 +60,14 @@ macro_rules! register_plugin {
 
         #[no_mangle]
         pub fn handle_rpc() {
-            if let Ok(rpc) = $crate::parse_stdin() {
+            if let Ok(rpc) = $crate::rpc::parse_stdin() {
                 match rpc {
-                    $crate::PluginServerRpc::Request { id, method, params } => {
+                    $crate::rpc::PluginServerRpc::Request { id, method, params } => {
                         STATE.with(|state| {
                             state.borrow_mut().handle_request(id, method, params);
                         });
                     }
-                    $crate::PluginServerRpc::Notification { method, params } => {
+                    $crate::rpc::PluginServerRpc::Notification { method, params } => {
                         STATE.with(|state| {
                             state.borrow_mut().handle_notification(method, params);
                         });
